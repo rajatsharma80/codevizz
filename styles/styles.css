@@ -1,0 +1,45 @@
+/* styles.css */
+
+/* Custom button styles */
+.button-primary {
+    background-color: #9200f3;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .button-primary:hover {
+    background-color: #9200f3;
+  }
+  
+  /* Custom card styles */
+  .card {
+    background-color: white;
+    border: 1px solid #eaeaea;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+  }
+
+/* Button styles */
+.button {
+    background-color: #ff4081; /* Pink button */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #e91e63; /* Darker pink on hover */
+}
