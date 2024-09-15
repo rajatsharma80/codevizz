@@ -16,6 +16,9 @@ export async function POST(req: NextRequest) {
     case 'Java code':
       prompt = `Generate Java code for: ${input}`;
       break;
+    case 'Sequence Diagram':
+      prompt = `Generate a Mermaid.js sequence diagram for the following use case: ${input}`;
+      break;
     default:
       prompt = `Invalid type`;
   }
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify({
       model: "gpt-3.5-turbo",
       messages: [{ role: "user", content: prompt }],
-      max_tokens: 100
+      max_tokens: 500
     })
   });
 
