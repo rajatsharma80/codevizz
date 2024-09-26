@@ -17,7 +17,9 @@ export async function POST(req: NextRequest) {
       prompt = `Generate Java code for: ${input}`;
       break;
     case 'Sequence Diagram':
-      prompt = `Generate a Mermaid.js sequence diagram for the following use case: ${input}`;
+      //prompt = `Create a detailed Mermaid.js sequence diagram for the following scenario: ${input}`;
+      prompt = `Generate a Mermaid.js sequence diagram for the given prompt. Only give the instructions generate the diagram using mermaid js. 
+      Please do not give any description or details as i need to use the response to render sequence diagram image in my code: ${input}`
       break;
     default:
       prompt = `Invalid type`;

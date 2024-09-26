@@ -8,9 +8,17 @@ export default function Home() {
   const [output, setOutput] = useState('');
   const [type, setType] = useState('HTML code');
 
+  // Initialize mermaid globally once
   useEffect(() => {
-    // Initialize Mermaid
-    mermaid.initialize({ startOnLoad: true });
+    mermaid.initialize({
+      theme: 'default',
+      startOnLoad: false,  // Disable automatic loading
+      sequence: {
+        showSequenceNumbers: true,
+      },
+    });
+
+    // PayPal integration (this part seems unrelated to Mermaid but it can stay here)
     const script = document.createElement('script');
     script.src = "https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23";
     script.addEventListener('load', () => {
@@ -18,23 +26,16 @@ export default function Home() {
         window.paypal.Buttons({
           createOrder: function(data: any, actions: any) {
             return actions.order.create({
-              purchase_units: [{
-                amount: {
-                  value: '1.00' // Set the donation amount here
-                }
-              }]
+              purchase_units: [{ amount: { value: '1.00' } }]
             });
           },
           onApprove: function(data: any, actions: any) {
             return actions.order.capture().then(async function(details: any) {
               const response = await fetch('/api/payment-success', {
                 method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ orderID: data.orderID, payerID: data.payerID, paymentDetails: details })
               });
-
               if (response.ok) {
                 alert('Donation successful! Thank you, ' + details.payer.name.given_name);
               } else {
@@ -51,18 +52,35 @@ export default function Home() {
   const handleGenerate = async () => {
     const response = await fetch('/api/generate', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ input, type })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input, type }),
     });
 
     if (response.ok) {
       const data = await response.json();
-      let diagramOutput = data.output;
-      if (type === 'Sequence Diagram' && diagramOutput.startsWith('mermaid')) {
-        diagramOutput = diagramOutput.replace(/^mermaid\s+/, '');
+      let diagramOutput = data.output.trim();
+      console.log("Diagram type ", type);
+      // Handle sequence diagram syntax cleanup
+      if (type === 'Sequence Diagram' ) {
+        console.log("Diagram printing");
+        diagramOutput = diagramOutput.replace(/^```mermaid\s+/, '').replace(/```$/, '').replace(/```/g, '') .trim();
+        // diagramOutput = `sequenceDiagram 
+        //   participant Customer
+        //   participant Cart
+        //   participant Checkout
+        //   Customer->>Cart: Add item to cart
+        //   activate Cart
+        //   Cart-->>Customer: Item added to cart successfully
+        //   deactivate Cart
+        //   Customer->>Checkout: Click on checkout button
+        //   activate Checkout
+        //   Checkout-->>Customer: Redirect to checkout page
+        //   deactivate Checkout`;
+        console.log("Diagram Output: ", diagramOutput);
+      }else{
+        console.log("Diagram not printing");
       }
+      
       setOutput(diagramOutput);
     } else {
       console.error('Failed to generate output');
@@ -70,8 +88,14 @@ export default function Home() {
   };
 
   useEffect(() => {
+    // Mermaid needs to be re-initialized after the output updates
     if (type === 'Sequence Diagram' && output) {
-      mermaid.contentLoaded();
+      try {
+        // Reinitialize Mermaid for the newly injected content
+        mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+      } catch (error) {
+        console.error('Mermaid rendering error: ', error);
+      }
     }
   }, [output, type]);
 
@@ -97,15 +121,11 @@ export default function Home() {
           onChange={(e) => setInput(e.target.value)}
         />
         {type === 'Sequence Diagram' ? (
-          console.log(output),
           <div
             className="textarea w-1/2 h-64 p-2 border rounded text-black overflow-auto"
-            dangerouslySetInnerHTML={{
-              __html: `<div class="mermaid">${output}</div>`
-            }}
+            dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }}
           />
         ) : (
-          console.log(output),
           <textarea
             className="textarea w-1/2 h-64 p-2 border rounded text-black overflow-auto"
             value={output}
@@ -114,16 +134,10 @@ export default function Home() {
         )}
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-        <button
-          onClick={handleGenerate}
-          className="button-primary rounded button-spacing"
-        >
+        <button onClick={handleGenerate} className="button-primary rounded button-spacing">
           Generate
         </button>
-        <button
-          onClick={() => setInput('')}
-          className="button-secondary rounded button-spacing"
-        >
+        <button onClick={() => setInput('')} className="button-secondary rounded button-spacing">
           Clear
         </button>
       </div>
