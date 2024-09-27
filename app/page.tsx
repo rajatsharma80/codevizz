@@ -8,14 +8,26 @@ export default function Home() {
   const [output, setOutput] = useState('');
   const [type, setType] = useState('HTML code');
 
-    // Copy to clipboard function
-    const copyToClipboard = () => {
-      navigator.clipboard.writeText(output).then(() => {
-        alert('Copied to clipboard');
-      }).catch(err => {
-        console.error('Failed to copy: ', err);
-      });
-    };
+  const downloadFile = () => {
+    const blob = new Blob([output], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'output.htm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  // Copy to clipboard function
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(output).then(() => {
+      alert('Copied to clipboard');
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  };
 
   // Initialize mermaid globally once
   useEffect(() => {
@@ -126,11 +138,14 @@ export default function Home() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-{type === 'Sequence Diagram' ? (
+        {type === 'Sequence Diagram' ? (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
             <div className="absolute top-2 right-2">
-              <button onClick={copyToClipboard} className="copy-btn">
+              <button onClick={copyToClipboard} className="copy-btn small-text">
                 <i className="fa fa-copy"></i> Copy Output
+              </button>
+              <button onClick={downloadFile} className="download-btn small-text">
+                <i className="fa fa-download"></i>Download
               </button>
             </div>
             <div dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }} />
@@ -138,8 +153,11 @@ export default function Home() {
         ) : (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
             <div className="absolute top-2 right-2">
-              <button onClick={copyToClipboard} className="copy-btn">
+              <button onClick={copyToClipboard} className="copy-btn small-text">
                 <i className="fa fa-copy"></i>Copy Output
+              </button>
+              <button onClick={downloadFile} className="download-btn small-text">
+                <i className="fa fa-download"></i>Download
               </button>
             </div>
             <textarea

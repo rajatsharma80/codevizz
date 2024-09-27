@@ -64,52 +64,38 @@
   margin-right: 0.5rem;
 }
 
-/* Copy icon styles */
-.copy-icon {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.copy-icon:hover {
-  background-color: #e91e63; /* Highlight on hover */
-}
-
-.copy-icon i {
-  color: #000; /* Copy icon color */
-  font-size: 16px;
-}
-
 /* Copy button styles */
-.copy-btn {
+.copy-btn, .download-btn {
   display: inline-flex;
   align-items: center;
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 5px;
-  padding: 8px 15px;
+  padding: 1px 2px;
   cursor: pointer;
   font-weight: bold;
   color: #333;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin-left: 8px; /* Space between buttons */
 }
 
-.copy-btn i {
-  margin-right: 8px;
-  font-size: 18px;
+.copy-btn i, .download-btn i {
+  margin-right: 5px;
+  font-size: 15px;
   color: #555;
   transition: color 0.3s ease; /* Smooth transition for icon color */
 }
 
-.copy-btn:hover {
+.copy-btn:hover, .download-btn:hover {
   background-color:  #b769eb;
   color: white;
 }
 
 /* Specifically change the icon color on hover */
-.copy-btn:hover i {
+.copy-btn:hover i, .download-btn:hover i {
   color: white; /* Make the icon white on hover */
 }
 
+.small-text {
+  font-size: 0.75rem; /* Adjust the font size as needed */
+}
