@@ -8,6 +8,15 @@ export default function Home() {
   const [output, setOutput] = useState('');
   const [type, setType] = useState('HTML code');
 
+    // Copy to clipboard function
+    const copyToClipboard = () => {
+      navigator.clipboard.writeText(output).then(() => {
+        alert('Copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    };
+
   // Initialize mermaid globally once
   useEffect(() => {
     mermaid.initialize({
@@ -103,11 +112,8 @@ export default function Home() {
     <div className="p-4">
       <h1 className="text-2xl font-bold">TarzanAI</h1>
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-        <select
-          value={type}
-          onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
-          className="mt-4 p-2 border rounded bg-white text-black"
-        >
+        <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
+          className="mt-4 p-2 border rounded bg-white text-black">
           <option value="HTML code" className="text-black">HTML code</option>
           <option value="JUnit" className="text-black">JUnit</option>
           <option value="Java code" className="text-black">Java code</option>
@@ -120,24 +126,35 @@ export default function Home() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        {type === 'Sequence Diagram' ? (
-          <div
-            className="textarea w-1/2 h-64 p-2 border rounded text-black overflow-auto"
-            dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }}
-          />
+{type === 'Sequence Diagram' ? (
+          <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
+            <div className="absolute top-2 right-2">
+              <button onClick={copyToClipboard} className="copy-btn">
+                <i className="fa fa-copy"></i> Copy Output
+              </button>
+            </div>
+            <div dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }} />
+          </div>
         ) : (
-          <textarea
-            className="textarea w-1/2 h-64 p-2 border rounded text-black overflow-auto"
-            value={output}
-            readOnly
-          />
+          <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
+            <div className="absolute top-2 right-2">
+              <button onClick={copyToClipboard} className="copy-btn">
+                <i className="fa fa-copy"></i>Copy Output
+              </button>
+            </div>
+            <textarea
+              className="w-full h-full p-2 border rounded text-black overflow-auto"
+              value={output}
+              readOnly
+            />
+          </div>
         )}
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <button onClick={handleGenerate} className="button-primary rounded button-spacing">
           Generate
         </button>
-        <button onClick={() => setInput('')} className="button-secondary rounded button-spacing">
+        <button onClick={() => setInput('')} className="button rounded button-spacing">
           Clear
         </button>
       </div>
