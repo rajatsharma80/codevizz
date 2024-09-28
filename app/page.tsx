@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 export default function Home() {
   const [input, setInput] = useState('');
@@ -18,6 +20,42 @@ export default function Home() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const downloadPDF = () => {
+    const mermaidElement = document.querySelector('.mermaid');
+    if (mermaidElement) {
+      html2canvas(mermaidElement as HTMLElement).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        
+        // Get PDF dimensions
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        
+        // Get image dimensions
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        
+        // Calculate aspect ratio
+        const aspectRatio = imgWidth / imgHeight;
+        
+        // Calculate dimensions to fit within PDF
+        let newWidth = pdfWidth;
+        let newHeight = pdfWidth / aspectRatio;
+        
+        if (newHeight > pdfHeight) {
+          newHeight = pdfHeight;
+          newWidth = pdfHeight * aspectRatio;
+        }
+        
+        // Add image to PDF
+        pdf.addImage(imgData, 'PNG', 10, 10, newWidth - 20, newHeight - 20);
+        pdf.save('diagram.pdf');
+      });
+    } else {
+      console.error('Mermaid element not found');
+    }
   };
 
   // Copy to clipboard function
@@ -85,23 +123,10 @@ export default function Home() {
       if (type === 'Sequence Diagram' ) {
         console.log("Diagram printing");
         diagramOutput = diagramOutput.replace(/^```mermaid\s+/, '').replace(/```$/, '').replace(/```/g, '') .trim();
-        // diagramOutput = `sequenceDiagram 
-        //   participant Customer
-        //   participant Cart
-        //   participant Checkout
-        //   Customer->>Cart: Add item to cart
-        //   activate Cart
-        //   Cart-->>Customer: Item added to cart successfully
-        //   deactivate Cart
-        //   Customer->>Checkout: Click on checkout button
-        //   activate Checkout
-        //   Checkout-->>Customer: Redirect to checkout page
-        //   deactivate Checkout`;
         console.log("Diagram Output: ", diagramOutput);
       }else{
         console.log("Diagram not printing");
       }
-      
       setOutput(diagramOutput);
     } else {
       console.error('Failed to generate output');
@@ -136,7 +161,7 @@ export default function Home() {
         <textarea
           className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {setInput(e.target.value); handleGenerate(); }}
         />
         {type === 'Sequence Diagram' ? (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
@@ -144,7 +169,7 @@ export default function Home() {
               <button onClick={copyToClipboard} className="copy-btn small-text">
                 <i className="fa fa-copy"></i> Copy Output
               </button>
-              <button onClick={downloadFile} className="download-btn small-text">
+              <button onClick={downloadPDF} className="download-btn small-text">
                 <i className="fa fa-download"></i>Download
               </button>
             </div>
