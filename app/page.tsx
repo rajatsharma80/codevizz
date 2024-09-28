@@ -161,7 +161,7 @@ export default function Home() {
         <textarea
           className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto"
           value={input}
-          onChange={(e) => {setInput(e.target.value); handleGenerate(); }}
+          onChange={(e) => {setInput(e.target.value) }}
         />
         {type === 'Sequence Diagram' ? (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
