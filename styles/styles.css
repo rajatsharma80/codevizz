@@ -12,7 +12,7 @@
   }
   
   .button-primary:hover {
-    background-color: #9200f3;
+    background-color: #ad3ef7;
   }
   
   /* Custom card styles */
@@ -41,7 +41,7 @@
 }
 
 .button:hover {
-    background-color: #e91e63; /* Darker pink on hover */
+    background-color: #ad3ef7; /* Darker pink on hover */
 }
 
 /* Overlay toolbox styles */
