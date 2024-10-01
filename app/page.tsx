@@ -9,6 +9,11 @@ export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [type, setType] = useState('HTML code');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const downloadFile = () => {
     const blob = new Blob([output], { type: 'text/html' });
@@ -173,7 +178,9 @@ export default function Home() {
                 <i className="fa fa-download"></i>Download
               </button>
             </div>
-            <div dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }} />
+            {isMounted && (
+              <div dangerouslySetInnerHTML={{ __html: `<div class="mermaid">${output}</div>` }} />
+            )}
           </div>
         ) : (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
