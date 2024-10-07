@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -7,18 +8,14 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",  // Use "node" to resolve Next.js modules properly
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
+    "baseUrl": ".",  // This sets the base path for resolving modules
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"]  // Optional alias setup for cleaner imports
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "global.d.ts"],
