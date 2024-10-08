@@ -17,6 +17,9 @@ export default function Home() {
     mermaid.initialize({
       theme: 'default',
       startOnLoad: false,
+      flowchart: { // Ensure flowchart configuration is enabled
+        useMaxWidth: true,
+      },
       sequence: {
         showSequenceNumbers: true,
       },
@@ -115,7 +118,7 @@ export default function Home() {
       const data = await response.json();
       let diagramOutput = data.output.trim();
 
-      if (type === 'Sequence Diagram') {
+      if (type === 'Sequence Diagram' || type === 'Flowchart') {
         // Clean up the Mermaid instructions
         diagramOutput = diagramOutput.replace(/^```mermaid\s+/, '').replace(/```$/, '').replace(/```/g, '').trim();
       }
@@ -127,7 +130,7 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (type === 'Sequence Diagram' && output) {
+    if ((type === 'Flowchart' || type === 'Sequence Diagram') && output) {
       const container = document.querySelector('.mermaid-output');
       if (container) {
         // Clear existing content
@@ -159,6 +162,7 @@ export default function Home() {
           <option value="HTML code" className="text-black">HTML code</option>
           <option value="JUnit" className="text-black">JUnit</option>
           <option value="Java code" className="text-black">Java code</option>
+          <option value="Flowchart" className="text-black">Flowchart</option>
           <option value="Sequence Diagram" className="text-black">Sequence Diagram</option>
         </select>
       </div>
@@ -168,7 +172,7 @@ export default function Home() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        {type === 'Sequence Diagram' ? (
+        {(type === 'Flowchart' || type === 'Sequence Diagram')  ? (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
             <div className="absolute top-2 right-2">
               <button className="copy-btn small-text" onClick={copyToClipboard}>
