@@ -149,7 +149,10 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">TarzanAI</h1>
+      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
+        <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
+        <p className="text-lg">AI Diagram Generator - Generate software diagrams from text</p>
+      </div>
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
           className="mt-4 p-2 border rounded bg-white text-black">

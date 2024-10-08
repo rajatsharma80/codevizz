@@ -16,6 +16,10 @@ export async function POST(req: NextRequest) {
     case 'Java code':
       prompt = `Generate Java code for: ${input}`;
       break;
+    case 'Flowchart':
+        prompt = `Generate a Mermaid.js flowchart diagram for the given prompt. Only give the instructions generate the diagram using mermaid js. 
+        Please do not give any description or details as i need to use the response to render flowchart diagram image in my code: ${input}`;
+        break;
     case 'Sequence Diagram':
       //prompt = `Create a detailed Mermaid.js sequence diagram for the following scenario: ${input}`;
       prompt = `Generate a Mermaid.js sequence diagram for the given prompt. Only give the instructions generate the diagram using mermaid js. 
