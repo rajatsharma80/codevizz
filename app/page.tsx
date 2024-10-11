@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import mermaid from 'mermaid';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import Script from 'next/script';  // Import Script component
 
 export default function Home() {
   const [input, setInput] = useState('');
@@ -17,44 +18,40 @@ export default function Home() {
     mermaid.initialize({
       theme: 'default',
       startOnLoad: false,
-      flowchart: { // Ensure flowchart configuration is enabled
+      flowchart: { 
         useMaxWidth: true,
       },
       sequence: {
         showSequenceNumbers: true,
       },
     });
-
-    // PayPal integration
-    const script = document.createElement('script');
-    script.src = "https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23";
-    script.addEventListener('load', () => {
-      if (window.paypal) {
-        window.paypal.Buttons({
-          createOrder: function (data: any, actions: any) {
-            return actions.order.create({
-              purchase_units: [{ amount: { value: '1.00' } }]
-            });
-          },
-          onApprove: function (data: any, actions: any) {
-            return actions.order.capture().then(async function (details: any) {
-              const response = await fetch('/api/payment-success', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderID: data.orderID, payerID: data.payerID, paymentDetails: details })
-              });
-              if (response.ok) {
-                alert('Donation successful! Thank you, ' + details.payer.name.given_name);
-              } else {
-                alert('There was an issue processing your donation. Please contact support.');
-              }
-            });
-          }
-        }).render('#paypal-button-container');
-      }
-    });
-    document.body.appendChild(script);
   }, []);
+
+  const loadPayPalButtons = () => {
+    if (window.paypal) {
+      window.paypal.Buttons({
+        createOrder: function (data: any, actions: any) {
+          return actions.order.create({
+            purchase_units: [{ amount: { value: '1.00' } }]
+          });
+        },
+        onApprove: function (data: any, actions: any) {
+          return actions.order.capture().then(async function (details: any) {
+            const response = await fetch('/api/payment-success', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderID: data.orderID, payerID: data.payerID, paymentDetails: details })
+            });
+            if (response.ok) {
+              alert('Donation successful! Thank you, ' + details.payer.name.given_name);
+            } else {
+              alert('There was an issue processing your donation. Please contact support.');
+            }
+          });
+        }
+      }).render('#paypal-button-container');
+    }
+  };
 
   const downloadFile = () => {
     const blob = new Blob([output], { type: 'text/html' });
@@ -148,7 +145,7 @@ export default function Home() {
         console.error('Mermaid container not found');
       }
     }
-  }, [output, type]); // Trigger re-render when output or type changes
+  }, [output, type]);
 
   return (
     <div className="p-4">
@@ -156,6 +153,14 @@ export default function Home() {
         <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
         <p className="text-lg">AI Diagram Generator - Generate software diagrams from text</p>
       </div>
+
+      {/* PayPal SDK Integration */}
+      <Script
+        src="https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23"
+        strategy="afterInteractive"
+        onLoad={loadPayPalButtons}  // Load PayPal buttons after the script is loaded
+      />
+
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
           className="mt-4 p-2 border rounded bg-white text-black">
@@ -172,7 +177,7 @@ export default function Home() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
         />
-        {(type === 'Flowchart' || type === 'Sequence Diagram')  ? (
+        {(type === 'Flowchart' || type === 'Sequence Diagram') ? (
           <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
             <div className="absolute top-2 right-2">
               <button className="copy-btn small-text" onClick={copyToClipboard}>
