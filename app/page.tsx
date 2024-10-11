@@ -12,20 +12,22 @@ export default function Home() {
   const [type, setType] = useState('HTML code');
   const [isMounted, setIsMounted] = useState(false);
 
-  // useEffect(() => {
-  //   setIsMounted(true);
-  //   // Initialize Mermaid globally
-  //   mermaid.initialize({
-  //     theme: 'default',
-  //     startOnLoad: false,
-  //     flowchart: { 
-  //       useMaxWidth: true,
-  //     },
-  //     sequence: {
-  //       showSequenceNumbers: true,
-  //     },
-  //   });
-  // }, []);
+  useEffect(() => {
+    if (!isMounted) {
+      setIsMounted(true);
+      // Initialize Mermaid globally only once
+      mermaid.initialize({
+        theme: 'default',
+        startOnLoad: false,
+        flowchart: { 
+          useMaxWidth: true,
+        },
+        sequence: {
+          showSequenceNumbers: true,
+        },
+      });
+    }
+  }, [isMounted]);
 
   const loadPayPalButtons = () => {
     if (window.paypal) {
