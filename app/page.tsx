@@ -129,8 +129,9 @@ export default function Home() {
   };
 
   useEffect(() => {
+    const container = document.querySelector('.mermaid-output');
     if ((type === 'Flowchart' || type === 'Sequence Diagram') && output) {
-      const container = document.querySelector('.mermaid-output');
+      
       if (container) {
         // Clear existing content
         container.innerHTML = '';
@@ -145,6 +146,11 @@ export default function Home() {
         }
       } else {
         console.error('Mermaid container not found');
+      }
+    }else {
+      // If type is not Flowchart or Sequence Diagram, clear the output box
+      if (container) {
+        container.innerHTML = '';
       }
     }
   }, [output, type]);
