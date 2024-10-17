@@ -9,7 +9,7 @@ import Script from 'next/script';  // Import Script component
 export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [type, setType] = useState('HTML code');
+  const [type, setType] = useState('Sequence Diagram');
   const [isMounted, setIsMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -217,14 +217,16 @@ export default function Home() {
 
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
+          onLoad={(e) => { setInput(''); setOutput(''); }}
           className="mt-4 p-2 border rounded bg-white text-black">
+          <option value="Sequence Diagram" className="text-black">Sequence Diagram</option>
           <option value="HTML code" className="text-black">HTML code</option>
           <option value="JUnit" className="text-black">JUnit</option>
           <option value="Java code" className="text-black">Java code</option>
           <option value="Flowchart" className="text-black">Flowchart</option>
-          <option value="Sequence Diagram" className="text-black">Sequence Diagram</option>
         </select>
       </div>
+
       <div className="flex mt-4">
         <textarea
           className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto"
