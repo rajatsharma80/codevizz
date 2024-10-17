@@ -11,6 +11,15 @@ export default function Home() {
   const [output, setOutput] = useState('');
   const [type, setType] = useState('HTML code');
   const [isMounted, setIsMounted] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   useEffect(() => {
     if (!isMounted) {
@@ -160,6 +169,43 @@ export default function Home() {
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
         <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
         <p className="text-lg">AI Diagram Generator - Generate software diagrams from text</p>
+        {/* Watch Demo Thumbnail */}
+        <div className="mt-6 flex justify-center">
+          <img
+            src="/images/tarzanai-demo.jpg"
+            alt="Watch Demo"
+            className="w-20 h-15 cursor-pointer"
+            onClick={openModal} // Open modal when image is clicked
+          />
+        </div>
+
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white p-6 rounded-lg relative w-11/12 max-w-2xl">
+              {/* Close Button */}
+              <button
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                onClick={closeModal}
+              >
+                &times;
+              </button>
+              
+              {/* YouTube Video */}
+              <div className="video-container">
+                <iframe
+                  width="100%"
+                  height="315"
+                  src="https://www.youtube.com/embed/aDBfQT-1C1Q"
+                  title="YouTube video player"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* PayPal SDK Integration */}
