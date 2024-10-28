@@ -64,3 +64,11 @@ body {
     .button-spacing {
       margin-right: 15px; /* Adjust the value as needed */
     }
+
+    .hover-animation {
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .hover-animation:hover {
+      transform: rotate(360deg) scale(1.2);
+    }

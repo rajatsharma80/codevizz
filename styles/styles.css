@@ -99,3 +99,15 @@
 .small-text {
   font-size: 0.75rem; /* Adjust the font size as needed */
 }
+
+/* styles.css */
+.nav-item {
+  padding: 0.5rem 1rem; /* Adds padding around the text */
+  border-radius: 0.25rem; /* Adds slightly rounded corners */
+  transition: background-color 0.3s, color 0.3s; /* Smooth transition effect */
+}
+
+.nav-item:hover {
+  background-color: white; /* Changes background to white on hover */
+  color: black; /* Changes text to black on hover */
+}

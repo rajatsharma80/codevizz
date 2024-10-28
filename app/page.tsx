@@ -5,6 +5,8 @@ import mermaid from 'mermaid';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Script from 'next/script';  // Import Script component
+import Link from 'next/link';
+import TopMenu from './components/TopMenu';
 
 export default function Home() {
   const [input, setInput] = useState('');
@@ -12,6 +14,8 @@ export default function Home() {
   const [type, setType] = useState('Sequence Diagram');
   const [isMounted, setIsMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paypalLoaded, setPaypalLoaded] = useState(false); // Track PayPal script loading
+
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -63,6 +67,14 @@ export default function Home() {
       }).render('#paypal-button-container');
     }
   };
+
+  useEffect(() => {
+    if (!paypalLoaded) {
+      setPaypalLoaded(true);
+    } else {
+      loadPayPalButtons(); // Reload PayPal buttons whenever PayPal script has loaded
+    }
+  }, [paypalLoaded]);
 
   const downloadFile = () => {
     const blob = new Blob([output], { type: 'text/html' });
@@ -165,16 +177,18 @@ export default function Home() {
   }, [output, type]);
 
   return (
+    <>
+    <TopMenu /> {/* Add the TopMenu component here */}
     <div className="p-4">
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
         <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
-        <p className="text-lg">AI Diagram Generator - Generate software diagrams from text</p>
+        <p className="text-lg">AI Diagram & Code Generator - Generate software diagrams & code from text</p>
         {/* Watch Demo Thumbnail */}
         <div className="mt-6 flex justify-center">
           <img
-            src="/images/tarzanai-demo.jpg"
+            src="/images/demo-icon.png"
             alt="Watch Demo"
-            className="w-20 h-15 cursor-pointer"
+            className="w-21 h-7 cursor-pointer"
             onClick={openModal} // Open modal when image is clicked
           />
         </div>
@@ -209,11 +223,11 @@ export default function Home() {
       </div>
 
       {/* PayPal SDK Integration */}
-      <Script
+      {/* <Script
         src="https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23"
         strategy="afterInteractive"
         onLoad={loadPayPalButtons}  // Load PayPal buttons after the script is loaded
-      />
+      /> */}
 
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
@@ -276,7 +290,16 @@ export default function Home() {
       <p className="mt-4 text-black">
         If you find this tool helpful, consider making a donation to support its development, Thanks!!
       </p>
+
+
+        {/* PayPal SDK Integration */}
+        <Script
+          src="https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23"
+          strategy="afterInteractive"
+          onLoad={() => setPaypalLoaded(true)} // Trigger loading state when script loads
+        />
       <div id="paypal-button-container" className="mt-4"></div>
     </div>
+    </>
   );
 }
