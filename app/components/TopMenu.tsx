@@ -15,7 +15,7 @@ export default function TopMenu() {
                 </Link>
                 <div className="text-2xl font-bold ml-2">TarzanAI</div>
             </div>
-            <ul className="flex space-x-8">
+            <ul className="flex space-x-2">
                 <li><a href="/" className="nav-item">Home</a></li>
                 <li><a href="/features" className="nav-item">Features</a></li>
                 <li><a href="/demo" className="nav-item">Demo</a></li>

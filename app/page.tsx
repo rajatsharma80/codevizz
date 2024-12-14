@@ -176,6 +176,86 @@ export default function Home() {
     }
   }, [output, type]);
 
+  const exportToDrawIO = async () => {
+    if (!output) {
+      alert('No diagram data available to export.');
+      return;
+    }
+
+    const prompt = `Convert the following Mermaid.js sequence diagram to draw.io XML format without any additional comments or explanations:
+${output}`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 2000
+      })
+    });
+
+
+    if (response.ok) {
+      const data = await response.json();
+      const xmlOutput = data.drawioXml;
+       console.log('API response:', data); // Debug log
+
+      if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
+        let xmlOutput = data.choices[0].message.content.trim();
+
+        xmlOutput = xmlOutput.replace(/^```[\s\S]*?xml\s*/i, '').replace(/```$/, '').trim();
+  
+        // Strip any potential triple backticks if present
+        if (xmlOutput.startsWith('```') && xmlOutput.endsWith('```')) {
+          xmlOutput = xmlOutput.slice(3, -3).trim();
+        }
+  
+        console.log('Extracted XML:', xmlOutput); // Log extracted XML for debugging
+  
+        if (!xmlOutput) {
+          alert('Failed to extract the XML content.');
+          return;
+        }
+  
+        const base64EncodedContent = btoa(xmlOutput);
+        const drawioUrl = `https://app.diagrams.net/?title=diagram.drawio#R${xmlOutput}`;
+  
+        window.open(drawioUrl, '_blank');
+      } else {
+        alert('Invalid response format. Please check the API response structure.');
+      }
+    } else {
+      alert('Failed to fetch the converted XML format from the server.');
+    }
+  };
+
+const downloadToSVG = () => {
+  const mermaidElement = document.querySelector('.mermaid'); // Assumes the diagram is rendered with Mermaid
+
+  if (!mermaidElement) {
+      alert("No diagram available to export.");
+      return;
+  }
+
+  // Convert the Mermaid diagram to SVG
+  const svgData = new XMLSerializer().serializeToString(mermaidElement);
+  const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+  const url = URL.createObjectURL(svgBlob);
+
+  // Create a downloadable link
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'diagram.svg';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
   return (
     <>
     <TopMenu /> {/* Add the TopMenu component here */}
@@ -253,8 +333,11 @@ export default function Home() {
               <button className="copy-btn small-text" onClick={copyToClipboard}>
                 <i className="fa fa-copy"></i> Copy Output
               </button>
-              <button className="download-btn small-text" onClick={downloadPDF}>
+              <button className="download-btn small-text" onClick={downloadToSVG}>
                 <i className="fa fa-download"></i>Download
+              </button>
+              <button className="download-btn small-text" onClick={exportToDrawIO}>
+                <i className="fa fa-download"></i>Export to draw.io
               </button>
             </div>
             {isMounted && (
