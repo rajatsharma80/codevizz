@@ -1,11 +1,14 @@
+// app/layout.tsx
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+// import "./globals.css";
 import '../styles/globals.css';
 import '../styles/styles.css'; // Import your custom CSS file
 import Script from 'next/script';
 import { DefaultSeo } from 'next-seo'; 
-import SEO from './next-seo.config'; // Your global SEO configuration
+import SEO from '../next-seo.config'; // Your global SEO configuration
+import Header from './components/Header'; // Import the TopMenu component
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,9 +31,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={inter.className}>
-        {children}
+        <Header /> {/* Render TopMenu here */}
+        <main>{children}</main>
       </body>
     </html>
   );
 }
-

@@ -6,7 +6,6 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import Script from 'next/script';  // Import Script component
 import Link from 'next/link';
-import TopMenu from './components/TopMenu';
 
 export default function Home() {
   const [input, setInput] = useState('');
@@ -128,7 +127,7 @@ export default function Home() {
   };
 
   const handleGenerate = async () => {
-    const response = await fetch('/api/generate', {
+    const response = await fetch('/api/openai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ input, type }),
@@ -258,7 +257,7 @@ const downloadToSVG = () => {
 
   return (
     <>
-    <TopMenu /> {/* Add the TopMenu component here */}
+    {/* <TopMenu /> Add the TopMenu component here */}
     <div className="p-4">
       <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
         <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>

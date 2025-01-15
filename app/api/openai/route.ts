@@ -1,4 +1,4 @@
-// app/api/generate/route.ts
+// app/api/openai/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
