@@ -1,4 +1,4 @@
-// app/components/Header.tsx
+// app/main/components/TopMenu.tsx
 import Link from 'next/link';
 import '../../../styles/styles.css'; 
 
@@ -19,7 +19,7 @@ export default function TopMenu() {
                 <li><a href="/main/dashboard" className="nav-item">Dashboard</a></li>
                 {/* <li><a href="/main" className="nav-item">Home</a></li> */}
                 <li><a href="/main/features" className="nav-item">Features</a></li>
-                <li><a href="/main/user-demo" className="nav-item">User Demo</a></li>
+                <li><a href="/main/demo" className="nav-item">Demo</a></li>
                 
             </ul>
         </nav>

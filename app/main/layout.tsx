@@ -2,12 +2,11 @@
 
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-// import "./globals.css";
 import '../../styles/globals.css';
 import '../../styles/styles.css'; // Import your custom CSS file
 import Script from 'next/script';
 import { DefaultSeo } from 'next-seo'; 
-import Header from './components/Header'; // Import the TopMenu component
+import TopMenu from './components/TopMenu'; // Import the TopMenu component
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,7 +26,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={inter.className}>
-        <Header /> {/* Render TopMenu here */}
+        <TopMenu /> {/* Render TopMenu here */}
         <main>{children}</main>
       </body>
     </html>
