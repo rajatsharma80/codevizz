@@ -1,10 +1,8 @@
 // app/features/page.tsx
-import TopMenu from '../components/TopMenu';
 
 export default function Features() {
     return (
         <>
-            <TopMenu /> {/* Add the TopMenu component here */}
             <div className="p-4">
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-20">
                     <h1 className="text-4xl font-bold mb-4">Features</h1>

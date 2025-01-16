@@ -1,74 +1,91 @@
-/* globals.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* CSS Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
   }
-  
-/* Body styles */
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
+  color: white;
+  background: linear-gradient(to bottom, transparent, white) white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  background-color: #c4abde !important; /* Purple background */
+  color: white !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
     background-color: #c4abde !important; /* Purple background */
     color: white !important;
   }
-  
-  /* Override any dark mode styles */
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #c4abde !important; /* Purple background */
-      color: white !important;
-    }
-  }
-  
-  /* Anchor tag styles */
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
-  
-  /* Heading styles */
-  h1, h2, h3, h4, h5, h6 {
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-  
-  /* Paragraph styles */
-  p {
-    margin-bottom: 1rem;
-  }
-  
-  /* Utility classes */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
+}
 
-    /* Textarea styles */
-    .textarea {
-        width: 50%;
-        height: 500px;
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-family: inherit;
-        font-size: 1rem;
-        line-height: 1.5;
-        background-color: white;
-        resize: vertical; /* Allows vertical resizing only */
-    }
+a {
+  color: inherit;
+  text-decoration: none;
+}
 
-    .button-spacing {
-      margin-right: 15px; /* Adjust the value as needed */
-    }
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
 
-    .hover-animation {
-      transition: transform 0.3s ease-in-out;
-    }
-    
-    .hover-animation:hover {
-      transform: rotate(360deg) scale(1.2);
-    }
+p {
+  margin-bottom: 1rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.textarea {
+  width: 50%;
+  height: 500px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  background-color: white;
+  resize: vertical; /* Allows vertical resizing only */
+}
+
+.button-spacing {
+  margin-right: 15px; /* Adjust the value as needed */
+}
+
+.hover-animation {
+  transition: transform 0.3s ease-in-out;
+}
+
+.hover-animation:hover {
+  transform: rotate(360deg) scale(1.2);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* CSS Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
