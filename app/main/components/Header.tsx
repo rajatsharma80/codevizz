@@ -1,6 +1,6 @@
 // app/components/Header.tsx
 import Link from 'next/link';
-import '../../styles/styles.css'; 
+import '../../../styles/styles.css'; 
 
 export default function TopMenu() {
     return (
@@ -16,9 +16,11 @@ export default function TopMenu() {
                 <div className="text-2xl font-bold ml-2">TarzanAI</div>
             </div>
             <ul className="flex space-x-2">
-                <li><a href="/" className="nav-item">Home</a></li>
-                <li><a href="/features" className="nav-item">Features</a></li>
-                <li><a href="/user-demo" className="nav-item">User Demo</a></li>
+                <li><a href="/main/dashboard" className="nav-item">Dashboard</a></li>
+                {/* <li><a href="/main" className="nav-item">Home</a></li> */}
+                <li><a href="/main/features" className="nav-item">Features</a></li>
+                <li><a href="/main/user-demo" className="nav-item">User Demo</a></li>
+                
             </ul>
         </nav>
     );
