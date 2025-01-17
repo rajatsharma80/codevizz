@@ -1,6 +1,7 @@
 'use client'; // This marks the file as a Client Component
 
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import { useState } from 'react';
 import '../styles/globals.css';
 
@@ -8,12 +9,19 @@ export default function LandingPage() {
   const [authSuccess, setAuthSuccess] = useState(false);
   const router = useRouter();
 
-  const handleAuth = () => {
-    // Example authentication logic
-    const isAuthenticated = true; // Replace with your auth logic
-    if (isAuthenticated) {
-      setAuthSuccess(true);
-      router.push('/main/dashboard'); // Redirect to dashboard
+  const handleAuth = async () => {
+    try {
+      const result = await signIn('google', { callbackUrl: '/main/dashboard' });
+      if (result?.error) {
+        console.error('Authentication failed:', result.error);
+        alert('Authentication failed. Please try again.');
+      } else {
+        setAuthSuccess(true);
+        router.push('/main/dashboard');
+      }
+    } catch (error) {
+      console.error('An error occurred during authentication:', error);
+      alert('An unexpected error occurred. Please try again later.');
     }
   };
 
@@ -26,7 +34,7 @@ export default function LandingPage() {
           onClick={handleAuth}
           className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
         >
-          Login
+          Login with Google
         </button>
       </div>
     </div>
