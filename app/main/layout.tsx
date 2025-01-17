@@ -19,9 +19,8 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        
         <Script 
-          src="https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23" 
+          src={`https://www.paypal.com/sdk/js?client-id=${process.env.PAYPAL_CLIENT_ID}`} 
           strategy="afterInteractive" 
         />
       </head>
