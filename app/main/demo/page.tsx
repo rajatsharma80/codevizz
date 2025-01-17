@@ -1,4 +1,4 @@
-// app/features/page.tsx
+// app/main/demo/page.tsx
 "use client"; // Add this line at the top
 
 import { useState } from 'react';
@@ -10,7 +10,7 @@ export default function Features() {
         <>
             <div className="p-4">
                 <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-20">
-                    <h1 className="text-4xl font-bold mb-4">User Demo</h1>
+                    <h1 className="text-4xl font-bold mb-4">Demo</h1>
                 </div>
                 <div className="p-6">
                     <h2 className="text-2xl font-bold mb-2 text-black">AI Sequence Diagram Generator</h2>

@@ -1,4 +1,4 @@
-// app/features/page.tsx
+// app/main/features/page.tsx
 
 export default function Features() {
     return (
