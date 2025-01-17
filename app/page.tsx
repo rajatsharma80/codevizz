@@ -16,13 +16,13 @@ export default function LandingPage() {
           onClick={() => router.push('./signin')}
           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
         >
-          Sign In
+          Sign Up
         </button>
         <button
           onClick={() => router.push('./signin')}
           className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
         >
-          Sign Up
+          Login
         </button>
       </div>
 
