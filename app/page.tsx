@@ -1,42 +1,33 @@
-'use client'; // This marks the file as a Client Component
+'use client';
 
-import { useRouter } from 'next/navigation';
-import { signIn } from 'next-auth/react';
-import { useState } from 'react';
 import '../styles/globals.css';
+import { useRouter } from 'next/navigation';
+
+
 
 export default function LandingPage() {
-  const [authSuccess, setAuthSuccess] = useState(false);
   const router = useRouter();
 
-  const handleAuth = async () => {
-    try {
-      const result = await signIn('google', { callbackUrl: '/main/dashboard' });
-      if (result?.error) {
-        console.error('Authentication failed:', result.error);
-        alert('Authentication failed. Please try again.');
-      } else {
-        setAuthSuccess(true);
-        router.push('/main/dashboard');
-      }
-    } catch (error) {
-      console.error('An error occurred during authentication:', error);
-      alert('An unexpected error occurred. Please try again later.');
-    }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-      <div className="text-center py-20">
-        <h1 className="text-4xl font-bold mb-4">Welcome to the Landing Page</h1>
-        <p className="text-lg mb-6">Please log in to access the dashboard</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-600 to-purple-600 text-white relative">
+      {/* Top-right corner buttons */}
+      <div className="absolute top-4 right-4 flex space-x-4">
         <button
-          onClick={handleAuth}
-          className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+          onClick={() => router.push('./signin')}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
         >
-          Login with Google
+          Sign In
+        </button>
+        <button
+          onClick={() => router.push('./signin')}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+        >
+          Sign Up
         </button>
       </div>
+
+      {/* Centered Welcome Text */}
+      <h1 className="text-4xl font-bold">Welcome</h1>
     </div>
   );
 }
