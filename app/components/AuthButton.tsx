@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import googleLogo from "public/images/google.png";
-import githubLogo from "public/images/github.png";
+import googleLogo from "@/public/images/google.png"; 
+import githubLogo from "@/public/images/github.png"; 
 import { signIn } from "next-auth/react";
 
 export function GoogleSignInButton() {

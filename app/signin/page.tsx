@@ -10,7 +10,6 @@ export default async function SignInPage() {
   // Redirect authenticated users to /main/dashboard
   if (session) {
     redirect("/main/dashboard");
-    return null;
   }
 
   return (
@@ -18,7 +17,7 @@ export default async function SignInPage() {
       <div className="flex flex-col items-center bg-white rounded-lg shadow-md p-10">
         <h1 className="mt-6 mb-4 text-4xl font-bold text-gray-800">Sign In</h1>
         <GoogleSignInButton />
-        <GithubSignInButton />       
+        <GithubSignInButton />
         <span className="text-2xl font-semibold text-black text-center mt-8">
           Or
         </span>
