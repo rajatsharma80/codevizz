@@ -30,6 +30,11 @@ export const authConfig: NextAuthOptions = {
             data: {
               email: credentials.email,
               password: hashedPassword,
+              first_name: '',
+              last_name: '',
+              created_by: credentials.email,
+              modified_by: credentials.email,
+              login_ts: new Date()
             },
           });
         } else {
@@ -72,10 +77,13 @@ export const authConfig: NextAuthOptions = {
           if (!dbUser) {
             await prisma.user.create({
               data: {
-                email: user.email,
-                name: user.name,
-                image: user.image, // Optionally, store the name
-                // You can add more profile details here if needed
+              email: user.email,
+              first_name: user.name?.split(' ')[0] || '',
+              last_name: user.name?.split(' ')[1] || '',
+              image: user.image || '',
+              created_by: user.email,
+              modified_by: user.email,
+              login_ts: new Date()
               },
             });
           }
