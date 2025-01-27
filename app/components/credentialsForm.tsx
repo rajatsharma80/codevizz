@@ -1,5 +1,6 @@
 "use client";
 
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -11,10 +12,25 @@ export function CredentialsForm(props: CredentialsFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Skipping the authentication check, directly redirecting to dashboard
-    router.push("/main/dashboard");
+    const formData = new FormData(e.currentTarget);
+
+    // Attempt to sign in with credentials provider
+    const signInResponse = await signIn("credentials", {
+      email: formData.get("email") as string,
+      password: formData.get("password") as string,
+      redirect: false,
+    });
+
+    if (signInResponse?.error) {
+      // Handle error case
+      console.error("Login Error: ", signInResponse.error);
+      setError("Invalid email or password. Please try again!");
+    } else {
+      // Redirect to dashboard or timeline upon successful login
+      router.push("/main/dashboard");
+    }
   };
 
   return (
@@ -27,6 +43,16 @@ export function CredentialsForm(props: CredentialsFormProps) {
           {error}
         </span>
       )}
+
+      {/* CSRF Token Input (if needed) */}
+      {props.csrfToken && (
+        <input
+          type="hidden"
+          name="csrfToken"
+          defaultValue={props.csrfToken}
+        />
+      )}
+
       <input
         type="email"
         name="email"

@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// User Table
+model User {
+  id          Int      @id @default(autoincrement()) 
+  name        String?  @db.VarChar(48)
+  email       String   @unique @db.VarChar(255)
+  password  String?
+  image     String? //picture
+  login_time  DateTime? @default(now())
+  created_ts  DateTime @default(now())
+  modified_ts DateTime @default(now())
+
+  // Relations
+  projects            Project[]        @relation("CreatedProjects")
+  modifiedProjects    Project[]        @relation("ModifiedProjects")
+  createdModules      Module[]         @relation("CreatedModules")
+  modifiedModules     Module[]         @relation("ModifiedModules")
+  moduleHistories     ModuleHistory[]  @relation("CreatedModuleHistories")
+  moduleDrafts        ModuleDraft[]    @relation("CreatedModuleDrafts")
+
+  Project Project[]
+
+  ModuleHistory ModuleHistory[]
+}
+
+// Project Table
+model Project {
+  id           Int       @id @default(autoincrement())
+  user_id      Int
+  title        String    @db.VarChar(255)
+  created_by   Int
+  created_ts   DateTime  @default(now())
+  modified_by  Int
+  modified_ts  DateTime  @default(now())
+
+  // Relations
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  createdBy    User      @relation("CreatedProjects", fields: [created_by], references: [id])
+  modifiedBy   User      @relation("ModifiedProjects", fields: [modified_by], references: [id])
+  modules      Module[]  @relation("ProjectModules")
+
+  Module Module[]
+
+  ModuleHistory ModuleHistory[]
+
+  ModuleDraft ModuleDraft[]
+}
+
+// Module Table
+model Module {
+  id           Int       @id @default(autoincrement())
+  project_id   Int
+  title        String    @db.VarChar(255)
+  userprompt   String
+  systemprompt String
+  category     String    @db.VarChar(255)
+  subcategory  String    @db.VarChar(255)
+  generated    Bytes?
+  version      String    @db.VarChar(48)
+  created_by   Int
+  created_ts   DateTime  @default(now())
+  modified_by  Int
+  modified_ts  DateTime  @default(now())
+
+  // Relations
+  project      Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  createdBy    User      @relation("CreatedModules", fields: [created_by], references: [id])
+  modifiedBy   User      @relation("ModifiedModules", fields: [modified_by], references: [id])
+
+  Project Project[] @relation("ProjectModules")
+}
+
+// ModuleHistory Table
+model ModuleHistory {
+  id           Int       @id @default(autoincrement())
+  project_id   Int
+  title        String    @db.VarChar(255)
+  userprompt   String
+  systemprompt String
+  category     String    @db.VarChar(255)
+  sub_category String    @db.VarChar(255)
+  generated    Bytes?
+  created_by   Int
+  created_ts   DateTime  @default(now())
+  modified_by  Int?
+  modified_ts  DateTime  @default(now())
+
+  // Relations
+  project      Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  createdBy    User      @relation("CreatedModuleHistories", fields: [created_by], references: [id])
+  modifiedBy   User?     @relation(fields: [modified_by], references: [id])
+}
+
+// ModuleDraft Table
+model ModuleDraft {
+  id           Int       @id @default(autoincrement())
+  project_id   Int
+  title        String    @db.VarChar(255)
+  userprompt   String
+  systemprompt String
+  category     String    @db.VarChar(255)
+  sub_category String    @db.VarChar(255)
+  created_by   Int
+  created_ts   DateTime  @default(now())
+
+  // Relations
+  project      Project   @relation(fields: [project_id], references: [id], onDelete: Cascade)
+  createdBy    User      @relation("CreatedModuleDrafts", fields: [created_by], references: [id])
+}
+
