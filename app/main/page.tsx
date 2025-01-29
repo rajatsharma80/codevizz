@@ -9,16 +9,21 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
 // import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { PrismaClient } from '@prisma/client';
+
 
 
 export default function Home() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [type, setType] = useState('Sequence Diagram');
+  const [type, setType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paypalLoaded, setPaypalLoaded] = useState(false); // Track PayPal script loading
-
+  const [isFormatting, setIsFormatting] = useState(false);
+  const [diagramTypes, setDiagramTypes] = useState<
+    { id: number; title: string }[]
+  >([]);
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -35,7 +40,7 @@ export default function Home() {
       mermaid.initialize({
         theme: 'default',
         startOnLoad: false,
-        flowchart: { 
+        flowchart: {
           useMaxWidth: true,
         },
         sequence: {
@@ -48,24 +53,24 @@ export default function Home() {
   const loadPayPalButtons = () => {
     if (window.paypal) {
       window.paypal.Buttons({
-        createOrder: function (data: any, actions: any) {
-          return actions.order.create({
+          createOrder: function (data: any, actions: any) {
+            return actions.order.create({
             purchase_units: [{ amount: { value: '1.00' } }]
-          });
-        },
-        onApprove: function (data: any, actions: any) {
-          return actions.order.capture().then(async function (details: any) {
+            });
+          },
+          onApprove: function (data: any, actions: any) {
+            return actions.order.capture().then(async function (details: any) {
             const response = await fetch('/api/payment-success', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ orderID: data.orderID, payerID: data.payerID, paymentDetails: details })
-            });
-            if (response.ok) {
+              });
+              if (response.ok) {
               alert('Donation successful! Thank you, ' + details.payer.name.given_name);
-            } else {
+              } else {
               alert('There was an issue processing your donation. Please contact support.');
-            }
-          });
+              }
+            });
         }
       }).render('#paypal-button-container');
     }
@@ -127,7 +132,7 @@ export default function Home() {
       alert('Copied to clipboard');
     }).catch(err => {
       console.error('Failed to copy: ', err);
-    });
+      });
   };
 
   const handleGenerate = async () => {
@@ -211,22 +216,22 @@ ${output}`;
         let xmlOutput = data.choices[0].message.content.trim();
 
         xmlOutput = xmlOutput.replace(/^```[\s\S]*?xml\s*/i, '').replace(/```$/, '').trim();
-  
+
         // Strip any potential triple backticks if present
         if (xmlOutput.startsWith('```') && xmlOutput.endsWith('```')) {
           xmlOutput = xmlOutput.slice(3, -3).trim();
         }
-  
+
         console.log('Extracted XML:', xmlOutput); // Log extracted XML for debugging
-  
+
         if (!xmlOutput) {
           alert('Failed to extract the XML content.');
           return;
         }
-  
+
         const base64EncodedContent = btoa(xmlOutput);
         const drawioUrl = `https://app.diagrams.net/?title=diagram.drawio#R${xmlOutput}`;
-  
+
         window.open(drawioUrl, '_blank');
       } else {
         alert('Invalid response format. Please check the API response structure.');
@@ -236,150 +241,261 @@ ${output}`;
     }
   };
 
-const downloadToSVG = () => {
+  const downloadToSVG = () => {
   const mermaidElement = document.querySelector('.mermaid'); // Assumes the diagram is rendered with Mermaid
 
-  if (!mermaidElement) {
+    if (!mermaidElement) {
       alert("No diagram available to export.");
       return;
-  }
+    }
 
-  // Convert the Mermaid diagram to SVG
-  const svgData = new XMLSerializer().serializeToString(mermaidElement);
+    // Convert the Mermaid diagram to SVG
+    const svgData = new XMLSerializer().serializeToString(mermaidElement);
   const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-  const url = URL.createObjectURL(svgBlob);
+    const url = URL.createObjectURL(svgBlob);
 
-  // Create a downloadable link
+    // Create a downloadable link
   const a = document.createElement('a');
-  a.href = url;
+    a.href = url;
   a.download = 'diagram.svg';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+
+  const handleSave = async () => {
+    try {
+    const response = await fetch('/api/saveModule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          project_id: 1,
+        title: 'Generated Diagram',
+          user_prompt: input,
+          system_prompt: output,
+        created_by: 'system',
+          category_id: 1,
+
+          sub_category_id: 1,
+      })
+      });
+    
+
+      if (!response.ok) {
+      throw new Error('Failed to save module');
+      }
+
+      const savedModule = await response.json();
+      alert("Module saved successfully!");
+      return savedModule;
+
+    } catch (error) {
+      console.error("Error saving module:", error);
+      alert("Failed to save module");
+      throw error;
+    }
+  };
+
+  const handleFormatText = async () => {
+    if (!input.trim()) return;
+
+    setIsFormatting(true);
+    try {
+      const response = await fetch("/api/format-text", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          input: input,
+          type: type,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to format text");
+      }
+
+      const data = await response.json();
+
+      if (data.output) {
+        setInput(data.output);
+      } else {
+        throw new Error("Formatted text not found in response");
+      }
+    } catch (error) {
+      console.error("Error formatting text:", error);
+      alert("Failed to format the text. Please try again.");
+    } finally {
+      setIsFormatting(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchDiagramTypes = async () => {
+      const response = await fetch('/api/diagramTypes');
+      const data = await response.json();
+      if (data && data.data) {
+        setDiagramTypes(data.data);
+        // Set the first diagram type as the default
+        setType(data.data[0]?.title || '');  // Default to the first title
+      } else {
+        console.error('Unexpected response:', data);
+      }
+    };
+    fetchDiagramTypes();
+  }, []);  // Empty dependency array to fetch only once when component mounts
+
+  const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setType(event.target.value);
+    setInput(''); 
+    setOutput('');
+  };
 
   return (
     <>
-    {/* <TopMenu /> Add the TopMenu component here */}
-    <div className="p-4">
-      <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
-        <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
+      {/* <TopMenu /> Add the TopMenu component here */}
+      <div className="p-4">
+        <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
+          <h1 className="text-4xl font-bold mb-4">TarzanAI</h1>
         <p className="text-lg">AI Diagram & Code Generator - Generate software diagrams & code from text</p>
-        {/* Watch Demo Thumbnail */}
-        <div className="mt-6 flex justify-center">
-          <img
-            src="/images/demo-icon.png"
-            alt="Watch Demo"
-            className="w-21 h-7 cursor-pointer"
-            onClick={openModal} // Open modal when image is clicked
-          />
-        </div>
+          {/* Watch Demo Thumbnail */}
+          <div className="mt-6 flex justify-center">
+            <img
+              src="/images/demo-icon.png"
+              alt="Watch Demo"
+              className="w-21 h-7 cursor-pointer"
+              onClick={openModal} // Open modal when image is clicked
+            />
+          </div>
 
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg relative w-11/12 max-w-2xl">
-              {/* Close Button */}
-              <button
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-                onClick={closeModal}
-              >
-                &times;
-              </button>
-              
-              {/* YouTube Video */}
-              <div className="video-container">
-                <iframe
-                  width="100%"
-                  height="315"
-                  src="https://www.youtube.com/embed/aDBfQT-1C1Q"
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                ></iframe>
+          {/* Modal */}
+          {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-white p-6 rounded-lg relative w-11/12 max-w-2xl">
+                {/* Close Button */}
+                <button
+                  className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
+                  onClick={closeModal}
+                >
+                  &times;
+                </button>
+
+                {/* YouTube Video */}
+                <div className="video-container">
+                  <iframe
+                    width="100%"
+                    height="315"
+                    src="https://www.youtube.com/embed/aDBfQT-1C1Q"
+                    title="YouTube video player"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
 
-      {/* PayPal SDK Integration */}
-      {/* <Script
+        {/* PayPal SDK Integration */}
+        {/* <Script
         src="https://www.paypal.com/sdk/js?client-id=AXHOAiW-KeruPbDdnJoUq2l3lJ2RdtWscYUTPsrFfwTBVKZevYZNbmX3C0xQz57xOOWjPLz74liEdx23"
         strategy="afterInteractive"
         onLoad={loadPayPalButtons}  // Load PayPal buttons after the script is loaded
       /> */}
 
-      <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
-        <select value={type} onChange={(e) => { setType(e.target.value); setInput(''); setOutput(''); }}
-          onLoad={(e) => { setInput(''); setOutput(''); }}
-          className="mt-4 p-2 border rounded bg-white text-black">
-          <option value="Sequence Diagram" className="text-black">Sequence Diagram</option>
-          <option value="HTML code" className="text-black">HTML code</option>
-          <option value="JUnit" className="text-black">JUnit</option>
-          <option value="Java code" className="text-black">Java code</option>
-          <option value="Flowchart" className="text-black">Flowchart</option>
-        </select>
-      </div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            margin: "20px 0",
+          }}
+        >
+          <select value={type} onChange={handleTypeChange} className="mt-4 p-2 border rounded bg-white text-black">
+        {diagramTypes.map((diagram) => (
+          <option key={diagram.id} value={diagram.title} className="text-black">
+            {diagram.title}
+          </option>
+        ))}
+      </select>
 
-      <div className="flex mt-4">
-        <textarea
-          className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-        />
+        </div>
+
+        <div className="flex mt-4">
+          <textarea
+            className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+          />
         {(type === 'Flowchart' || type === 'Sequence Diagram') ? (
-          <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
-            <div className="absolute top-2 right-2">
+            <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
+              <div className="absolute top-2 right-2">
               <button className="copy-btn small-text" onClick={copyToClipboard}>
                 <FontAwesomeIcon className="fa fa-copy" icon={faCopy} 
                 style={{fontSize: 16 }}/> {/*Copy Output*/}
-              </button>
+                </button>
               <button className="download-btn small-text" onClick={downloadToSVG}>
               <FontAwesomeIcon className="fa fa-download" icon={faDownload} 
                 style={{fontSize: 16 }}/> {/*Download*/}
-              </button>
-              {/* <button className="download-btn small-text" onClick={exportToDrawIO}>
+                </button>
+                {/* <button className="download-btn small-text" onClick={exportToDrawIO}>
                 <i className="fa fa-download"></i>Export to draw.io
               </button> */}
-            </div>
+              </div>
             {isMounted && (
               <div className="mermaid-output" />
             )}
-          </div>
-        ) : (
-          <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
-            <div className="absolute top-2 right-2">
+            </div>
+          ) : (
+            <div className="textarea w-1/2 h-64 p-2 border rounded mr-4 text-black overflow-auto relative">
+              <div className="absolute top-2 right-2">
               <button className="copy-btn small-text" onClick={copyToClipboard}>
               <FontAwesomeIcon className="fa fa-copy" icon={faCopy} 
                 style={{fontSize: 16 }}/> {/*Copy Output*/}
-              </button>
+                </button>
               <button className="download-btn small-text" onClick={downloadFile}>
               <FontAwesomeIcon className="fa fa-download" icon={faDownload} 
                 style={{fontSize: 16 }}/> {/*Download*/}
-              </button>
+                </button>
+              </div>
+              <textarea
+                className="w-full h-full p-2 border rounded text-black overflow-auto"
+                value={output}
+                readOnly
+              />
             </div>
-            <textarea
-              className="w-full h-full p-2 border rounded text-black overflow-auto"
-              value={output}
-              readOnly
-            />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
+
+      <button
+                  disabled={!input.trim() || isFormatting}
+                  className={`bottom-2 right-2 px-4 py-2 rounded-md border-2 border-blue-500 button-spacing
+      ${
+        input.trim() && !isFormatting
+          ? "text-blue-500 hover:bg-blue-50 cursor-pointer"
+          : "text-gray-400 border-gray-300 cursor-not-allowed"
+      } focus:outline-none transition-colors duration-200`}
+                  onClick={handleFormatText}
+                >
+                  {isFormatting ? "Formatting..." : "Format Text"}
+                </button>
         <button onClick={handleGenerate} className="button-primary rounded button-spacing">
-          Generate
-        </button>
+            Generate
+          </button>
+        <button onClick={handleSave} className="button-primary rounded button-spacing">
+            Save
+          </button>
         <button onClick={() => { setInput(''); setOutput(''); }} className="button rounded button-spacing">
-          Clear
-        </button>
-      </div>
-      <p className="mt-4 text-black">
+            Clear
+          </button>
+        </div>
+        <p className="mt-4 text-black">
         If you find this tool helpful, consider making a donation to support its development, Thanks!!
-      </p>
+        </p>
 
 
         {/* PayPal SDK Integration */}
@@ -388,8 +504,8 @@ const downloadToSVG = () => {
           strategy="afterInteractive"
           onLoad={() => setPaypalLoaded(true)} // Trigger loading state when script loads
         />
-      <div id="paypal-button-container" className="mt-4"></div>
-    </div>
+        <div id="paypal-button-container" className="mt-4"></div>
+      </div>
     </>
   );
 }
