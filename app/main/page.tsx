@@ -354,6 +354,41 @@ ${output}`;
     setOutput('');
   };
 
+
+const handleSave = async () => {
+  try {
+    const response = await fetch('/api/saveModule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        project_id: 1,
+        title: 'Generated Diagram',
+        user_prompt: input,
+        system_prompt: output,
+        created_by: 'system',
+        category_id: 1,
+        
+        sub_category_id: 1,
+      })
+    });
+    
+
+    if (!response.ok) {
+      throw new Error('Failed to save module');
+    }
+
+    const savedModule = await response.json();
+    alert("Module saved successfully!");
+    return savedModule;
+
+  } catch (error) {
+    console.error("Error saving module:", error);
+    alert("Failed to save module");
+    throw error;
+  }
+};
+
+
   return (
     <>
       {/* <TopMenu /> Add the TopMenu component here */}
