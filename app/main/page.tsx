@@ -9,8 +9,6 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
 // import { faDownload } from "@fortawesome/free-solid-svg-icons";
-import { PrismaClient } from '@prisma/client';
-
 
 
 export default function Home() {
@@ -40,7 +38,7 @@ export default function Home() {
       mermaid.initialize({
         theme: 'default',
         startOnLoad: false,
-        flowchart: {
+        flowchart: { 
           useMaxWidth: true,
         },
         sequence: {
@@ -281,7 +279,7 @@ ${output}`;
           sub_category_id: 1,
       })
       });
-    
+
 
       if (!response.ok) {
       throw new Error('Failed to save module');
@@ -350,7 +348,7 @@ ${output}`;
 
   const handleTypeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setType(event.target.value);
-    setInput(''); 
+    setInput('');
     setOutput('');
   };
 
