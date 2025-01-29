@@ -9,6 +9,8 @@ import Link from 'next/link';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCopy, faDownload } from "@fortawesome/free-solid-svg-icons";
 // import { faDownload } from "@fortawesome/free-solid-svg-icons";
+import { PrismaClient } from '@prisma/client';
+
 
 
 export default function Home() {
@@ -259,6 +261,41 @@ const downloadToSVG = () => {
   URL.revokeObjectURL(url);
 };
 
+
+const handleSave = async () => {
+  try {
+    const response = await fetch('/api/saveModule', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        project_id: 1,
+        title: 'Generated Diagram',
+        user_prompt: input,
+        system_prompt: output,
+        created_by: 'system',
+        category_id: 1,
+        
+        sub_category_id: 1,
+      })
+    });
+    
+
+    if (!response.ok) {
+      throw new Error('Failed to save module');
+    }
+
+    const savedModule = await response.json();
+    alert("Module saved successfully!");
+    return savedModule;
+
+  } catch (error) {
+    console.error("Error saving module:", error);
+    alert("Failed to save module");
+    throw error;
+  }
+};
+
+
   return (
     <>
     {/* <TopMenu /> Add the TopMenu component here */}
@@ -372,6 +409,9 @@ const downloadToSVG = () => {
       <div style={{ display: 'flex', justifyContent: 'center', margin: '20px 0' }}>
         <button onClick={handleGenerate} className="button-primary rounded button-spacing">
           Generate
+        </button>
+        <button onClick={handleSave} className="button-primary rounded button-spacing">
+          Save
         </button>
         <button onClick={() => { setInput(''); setOutput(''); }} className="button rounded button-spacing">
           Clear
