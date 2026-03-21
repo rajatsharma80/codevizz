@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model project {
+  id          BigInt    @id @default(autoincrement())
+  user_id      BigInt
+  title       String     @db.VarChar(50)
+  created_by   String     @db.VarChar(250)
+  created_ts   DateTime   @default(now()) @db.Timestamp(6)
+  modified_by  String?    @db.VarChar(250)
+  modified_ts  DateTime   @default(now()) @db.Timestamp(6)
+  user        user       @relation(fields: [user_id], references: [id])
+  module      module[]
+  module_draft module_draft[]
+  module_audit module_audit[]
+}
+
+model user {
+  id         BigInt    @id @default(autoincrement())
+  first_name  String?    @db.VarChar(250)
+  last_name   String?    @db.VarChar(250)
+  email      String    @unique @db.VarChar(250)
+  password   String?    
+  image      String?
+  login_ts    DateTime? @default(now()) @db.Timestamp(6)
+  created_by  String    @db.VarChar(250)
+  created_ts  DateTime  @default(now()) @db.Timestamp(6)
+  modified_by String?   @db.VarChar(250)
+  modified_ts DateTime  @default(now()) @db.Timestamp(6)
+  project    project[]
+}
+
+model module {
+  id            BigInt    @id @default(autoincrement())
+  project_id     BigInt
+  title         String     @db.VarChar(50)
+  user_prompt    String     @db.VarChar(3000)
+  system_prompt  String     @db.VarChar(6000)
+  category_id    BigInt
+  sub_category_id BigInt
+  generated     Bytes?
+  created_by     String     @db.VarChar(250)
+  created_ts     DateTime   @default(now()) @db.Timestamp(6)
+  modified_by    String?    @db.VarChar(250)
+  modified_ts    DateTime   @default(now()) @db.Timestamp(6)
+  project       project    @relation(fields: [project_id], references: [id])
+  category       category    @relation(fields: [category_id], references: [id])
+  sub_category       sub_category    @relation(fields: [sub_category_id], references: [id])
+
+  module_audit module_audit[]
+}
+
+model module_audit {
+  id            BigInt    @id @default(autoincrement())
+  module_id      BigInt
+  project_id     BigInt
+  title         String     @db.VarChar(50)
+  user_prompt    String     @db.VarChar(3000)
+  system_prompt  String     @db.VarChar(6000)
+  category_id    BigInt
+  sub_category_id BigInt
+  generated     Bytes?
+  created_by     String     @db.VarChar(250)
+  created_ts     DateTime   @default(now()) @db.Timestamp(6)
+  modified_by    String?    @db.VarChar(250)
+  modified_ts    DateTime   @default(now()) @db.Timestamp(6)
+  project       project    @relation(fields: [project_id], references: [id])
+  module module @relation(fields: [module_id], references: [id])
+  category       category    @relation(fields: [category_id], references: [id])
+  sub_category       sub_category    @relation(fields: [sub_category_id], references: [id])
+}
+
+model module_draft {
+  id            BigInt    @id @default(autoincrement())
+  project_id     BigInt
+  title         String     @db.VarChar(50)
+  user_prompt    String     @db.VarChar(3000)
+  system_prompt  String     @db.VarChar(6000)
+  category_id    BigInt
+  sub_category_id BigInt
+  generated     Bytes?
+  created_by     String     @db.VarChar(250)
+  created_ts     DateTime   @default(now()) @db.Timestamp(6)
+  project       project    @relation(fields: [project_id], references: [id])
+  category       category    @relation(fields: [category_id], references: [id])
+  sub_category       sub_category    @relation(fields: [sub_category_id], references: [id])
+}
+
+model category {
+  id          BigInt    @id @default(autoincrement())
+  title       String     @unique @db.VarChar(50)
+  prompt      String     @db.VarChar(250)
+  is_active Boolean @default(true)
+  created_by   String?     @db.VarChar(250)
+  created_ts   DateTime   @default(now()) @db.Timestamp(6)
+  modified_by  String?    @db.VarChar(250)
+  modified_ts  DateTime   @default(now()) @db.Timestamp(6)
+  sub_category sub_category[]
+
+  module module[]
+
+  module_audit module_audit[]
+
+  module_draft module_draft[]
+}
+
+model sub_category {
+  id          BigInt    @id @default(autoincrement())
+  title       String     @unique @db.VarChar(50)
+  prompt      String     @db.VarChar(250)
+  category_id  BigInt
+  is_active Boolean @default(true)
+  created_by   String?     @db.VarChar(250)
+  created_ts   DateTime   @default(now()) @db.Timestamp(6)
+  modified_by  String?    @db.VarChar(250)
+  modified_ts  DateTime   @default(now()) @db.Timestamp(6)
+  category    category   @relation(fields: [category_id], references: [id])
+
+  module module[]
+
+  module_audit module_audit[]
+
+  module_draft module_draft[]
+}
