@@ -85,6 +85,10 @@ Return only the HTML code, no explanation.`;
       prompt = `Invalid type`;
   }
 
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 });
+  }
+
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -97,6 +101,12 @@ Return only the HTML code, no explanation.`;
       max_tokens: 2000
     })
   });
+
+  if (!response.ok) {
+    const error = await response.json();
+    console.error('OpenAI error:', error);
+    return NextResponse.json({ error: error.error?.message || 'OpenAI request failed' }, { status: 500 });
+  }
 
   const data = await response.json();
   return NextResponse.json({ output: data.choices[0].message.content });
