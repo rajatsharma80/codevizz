@@ -5,7 +5,7 @@ import { NextAuthProvider } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "CodeViz - AI Diagram Generator",
+  title: "Codevizz - AI Diagram Generator",
   description: "Generate software diagrams from text using AI. Create sequence diagrams, flowcharts, and more!",
 };
 

@@ -7,8 +7,8 @@ import TopMenu from "./components/TopMenu";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "CodeViz",
-  description: "Generate software diagrams like flowcharts and sequence diagrams with the power of AI agent using CodeViz."
+  title: "Codevizz",
+  description: "Generate software diagrams like flowcharts and sequence diagrams with the power of AI agent using Codevizz."
 };
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {

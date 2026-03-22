@@ -369,7 +369,7 @@ ${output}`;
       {/* <TopMenu /> Add the TopMenu component here */}
       <div className="p-4">
         <div className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-center py-16">
-          <h1 className="text-4xl font-bold mb-4">CodeViz</h1>
+          <h1 className="text-4xl font-bold mb-4">Codevizz</h1>
         <p className="text-lg">AI Diagram & Code Generator - Generate software diagrams & code from text</p>
           {/* Watch Demo Thumbnail */}
           <div className="mt-6 flex justify-center">
